@@ -52,20 +52,20 @@ if __name__ == "__main__":
 
     print("Downloading uvr5_weights:")
 
-    # rvc_models_dir = BASE_DIR / "assets/uvr5_weights"
+    rvc_models_dir = BASE_DIR / "assets/uvr5_weights"
 
-    # model_names = [
-    #     "HP2-%E4%BA%BA%E5%A3%B0vocals%2B%E9%9D%9E%E4%BA%BA%E5%A3%B0instrumentals.pth",
-    #     "HP2_all_vocals.pth",
-    #     "HP3_all_vocals.pth",
-    #     "HP5-%E4%B8%BB%E6%97%8B%E5%BE%8B%E4%BA%BA%E5%A3%B0vocals%2B%E5%85%B6%E4%BB%96instrumentals.pth",
-    #     "HP5_only_main_vocal.pth",
-    #     "VR-DeEchoAggressive.pth",
-    #     "VR-DeEchoDeReverb.pth",
-    #     "VR-DeEchoNormal.pth",
-    # ]
-    # for model in model_names:
-    #     print(f"Downloading {model}...")
-    #     dl_model(RVC_DOWNLOAD_LINK + "uvr5_weights/", model, rvc_models_dir)
+    model_names = [
+        "HP2-%E4%BA%BA%E5%A3%B0vocals%2B%E9%9D%9E%E4%BA%BA%E5%A3%B0instrumentals.pth",
+        "HP2_all_vocals.pth",
+        "HP3_all_vocals.pth",
+        "HP5-%E4%B8%BB%E6%97%8B%E5%BE%8B%E4%BA%BA%E5%A3%B0vocals%2B%E5%85%B6%E4%BB%96instrumentals.pth",
+        "HP5_only_main_vocal.pth",
+        "VR-DeEchoAggressive.pth",
+        "VR-DeEchoDeReverb.pth",
+        "VR-DeEchoNormal.pth",
+    ]
+    for model in model_names:
+        print(f"Downloading {model}...")
+        dl_model(RVC_DOWNLOAD_LINK + "uvr5_weights/", model, rvc_models_dir)
 
     print("All models downloaded!")
