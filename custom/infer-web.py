@@ -2,6 +2,10 @@ import os
 import sys
 from dotenv import load_dotenv
 
+
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["no_proxy"] = "localhost, 127.0.0.1, ::1"
+
 now_dir = os.getcwd()
 sys.path.append(now_dir)
 load_dotenv()
