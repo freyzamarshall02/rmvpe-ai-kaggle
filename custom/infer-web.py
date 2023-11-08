@@ -1,8 +1,10 @@
 import os
 import sys
+from dotenv import load_dotenv
 
 now_dir = os.getcwd()
 sys.path.append(now_dir)
+load_dotenv()
 from infer.modules.vc.modules import VC
 from infer.lib.train.process_ckpt import (
     change_info,
@@ -13,7 +15,6 @@ from infer.lib.train.process_ckpt import (
 from i18n.i18n import I18nAuto
 from configs.config import Config
 from sklearn.cluster import MiniBatchKMeans
-from dotenv import load_dotenv
 import torch
 import numpy as np
 import gradio as gr
@@ -46,7 +47,6 @@ warnings.filterwarnings("ignore")
 torch.manual_seed(114514)
 
 
-load_dotenv()
 config = Config()
 vc = VC(config)
 
@@ -669,7 +669,27 @@ def train_index(exp_dir1, version19):
     yield "\n".join(infos)
 
 
-
+# but5.click(train1key, [exp_dir1, sr2, if_f0_3, trainset_dir4, spk_id5, gpus6, np7, f0method8, save_epoch10, total_epoch11, batch_size12, if_save_latest13, pretrained_G14, pretrained_D15, gpus16, if_cache_gpu17], info3)
+def train1key(
+    exp_dir1,
+    sr2,
+    if_f0_3,
+    trainset_dir4,
+    spk_id5,
+    np7,
+    f0method8,
+    save_epoch10,
+    total_epoch11,
+    batch_size12,
+    if_save_latest13,
+    pretrained_G14,
+    pretrained_D15,
+    gpus16,
+    if_cache_gpu17,
+    if_save_every_weights18,
+    version19,
+    gpus_rmvpe,
+):
     infos = []
 
     def get_info_str(strr):
@@ -742,8 +762,8 @@ def change_f0_method(f0method8):
     return {"visible": visible, "__type__": "update"}
 
 
-with gr.Blocks(title="😭 Hina\'s Kaggle RVC Mod") as app:
-    gr.Markdown("## 😭 Hina\'s Kaggle RVC Mod")
+with gr.Blocks(title="Hina UI") as app:
+    gr.Markdown("## Hina UI")
     gr.Markdown(
         value=i18n(
             ""
@@ -753,25 +773,25 @@ with gr.Blocks(title="😭 Hina\'s Kaggle RVC Mod") as app:
         with gr.TabItem(i18n("训练")):
             gr.Markdown(
                 value=i18n(
-                    "step1: 填写实验配置. 实验数据放在logs下, 每个实验一个文件夹, 需手工输入实验名路径, 内含实验配置, 日志, 训练得到的模型文件. "
+                    "step1: Name your model, and choose your sample rate"
                 )
             )
             with gr.Row():
-                exp_dir1 = gr.Textbox(label=i18n("输入实验名"), value="mi-test")
+                exp_dir1 = gr.Textbox(label=i18n("Enter Model Name"), value="test-model")
                 sr2 = gr.Radio(
-                    label=i18n("目标采样率"),
+                    label=i18n("Sample Rate"),
                     choices=["40k", "48k"],
                     value="48k",
                     interactive=True,
                 )
                 if_f0_3 = gr.Radio(
-                    label=i18n("模型是否带音高指导(唱歌一定要, 语音可以不要)"),
+                    label=i18n("Pitch Guidance, required for singing, optional for speech"),
                     choices=[True, False],
                     value=True,
                     interactive=True,
                 )
                 version19 = gr.Radio(
-                    label=i18n("版本"),
+                    label=i18n("Version"),
                     choices=["v1", "v2"],
                     value="v2",
                     interactive=True,
@@ -793,7 +813,7 @@ with gr.Blocks(title="😭 Hina\'s Kaggle RVC Mod") as app:
                 )
                 with gr.Row():
                     trainset_dir4 = gr.Textbox(
-                        label=i18n("输入训练文件夹路径"), value="/kaggle/working/content/training/dataset_raw"
+                        label=i18n("输入训练文件夹路径"), value="datasets"
                     )
                     spk_id5 = gr.Slider(
                         minimum=0,
@@ -827,7 +847,7 @@ with gr.Blocks(title="😭 Hina\'s Kaggle RVC Mod") as app:
                     with gr.Column():
                         f0method8 = gr.Radio(
                             label=i18n(
-                                "选择音高提取算法:输入歌声可用pm提速,高质量语音但CPU差可用dio提速,harvest质量更好但慢,rmvpe效果最好且微吃CPU/GPU"
+                                "F0 rmvpe_gpu should always be used it's just what is preferred"
                             ),
                             choices=["pm", "harvest", "dio", "rmvpe", "rmvpe_gpu"],
                             value="rmvpe_gpu",
@@ -867,9 +887,9 @@ with gr.Blocks(title="😭 Hina\'s Kaggle RVC Mod") as app:
                 with gr.Row():
                     save_epoch10 = gr.Slider(
                         minimum=1,
-                        maximum=50,
+                        maximum=250,
                         step=1,
-                        label=i18n("保存频率save_every_epoch"),
+                        label=i18n("Save frequency"),
                         value=25,
                         interactive=True,
                     )
@@ -877,7 +897,7 @@ with gr.Blocks(title="😭 Hina\'s Kaggle RVC Mod") as app:
                         minimum=2,
                         maximum=2500,
                         step=1,
-                        label=i18n("总训练轮数total_epoch"),
+                        label=i18n("total epochs"),
                         value=2500,
                         interactive=True,
                     )
@@ -885,26 +905,26 @@ with gr.Blocks(title="😭 Hina\'s Kaggle RVC Mod") as app:
                         minimum=1,
                         maximum=16,
                         step=1,
-                        label=i18n("每张显卡的batch_size"),
+                        label=i18n("batch size"),
                         value=default_batch_size,
                         interactive=True,
                     )
                     if_save_latest13 = gr.Radio(
-                        label=i18n("是否仅保存最新的ckpt文件以节省硬盘空间"),
+                        label=i18n("Save only latest ckpt to save space"),
                         choices=[i18n("是"), i18n("否")],
                         value=i18n("是"),
                         interactive=True,
                     )
                     if_cache_gpu17 = gr.Radio(
                         label=i18n(
-                            "是否缓存所有训练集至显存. 10min以下小数据可缓存以加速训练, 大数据缓存会炸显存也加不了多少速"
+                            "Cache data to GPU, if 8gb of vram or less, never use this, as it will only slow training down"
                         ),
                         choices=[i18n("是"), i18n("否")],
                         value=i18n("否"),
                         interactive=True,
                     )
                     if_save_every_weights18 = gr.Radio(
-                        label=i18n("是否在每次保存时间点将最终小模型保存至weights文件夹"),
+                        label=i18n("Create a usable model at every save point"),
                         choices=[i18n("是"), i18n("否")],
                         value=i18n("是"),
                         interactive=True,
@@ -939,9 +959,10 @@ with gr.Blocks(title="😭 Hina\'s Kaggle RVC Mod") as app:
                         label=i18n("以-分隔输入使用的卡号, 例如   0-1-2   使用卡0和卡1和卡2"),
                         value=gpus,
                         interactive=True,
-                    )
+                                            )
                     but3 = gr.Button(i18n("训练模型"), variant="primary")
                     but4 = gr.Button(i18n("训练特征索引"), variant="primary")
+                    but5 = gr.Button(i18n("一键训练"), variant="primary")
                     info3 = gr.Textbox(label=i18n("输出信息"), value="", max_lines=10)
                     but3.click(
                         click_train,
@@ -965,146 +986,31 @@ with gr.Blocks(title="😭 Hina\'s Kaggle RVC Mod") as app:
                         api_name="train_start",
                     )
                     but4.click(train_index, [exp_dir1, version19], info3)
-
-        with gr.TabItem(i18n("ckpt处理")):
-            with gr.Group():
-                gr.Markdown(value=i18n("模型融合, 可用于测试音色融合"))
-                with gr.Row():
-                    ckpt_a = gr.Textbox(label=i18n("A模型路径"), value="", interactive=True)
-                    ckpt_b = gr.Textbox(label=i18n("B模型路径"), value="", interactive=True)
-                    alpha_a = gr.Slider(
-                        minimum=0,
-                        maximum=1,
-                        label=i18n("A模型权重"),
-                        value=0.5,
-                        interactive=True,
+                    but5.click(
+                        train1key,
+                        [
+                            exp_dir1,
+                            sr2,
+                            if_f0_3,
+                            trainset_dir4,
+                            spk_id5,
+                            np7,
+                            f0method8,
+                            save_epoch10,
+                            total_epoch11,
+                            batch_size12,
+                            if_save_latest13,
+                            pretrained_G14,
+                            pretrained_D15,
+                            gpus16,
+                            if_cache_gpu17,
+                            if_save_every_weights18,
+                            version19,
+                            gpus_rmvpe,
+                        ],
+                        info3,
+                        api_name="train_start_all",
                     )
-                with gr.Row():
-                    sr_ = gr.Radio(
-                        label=i18n("目标采样率"),
-                        choices=["40k", "48k"],
-                        value="40k",
-                        interactive=True,
-                    )
-                    if_f0_ = gr.Radio(
-                        label=i18n("模型是否带音高指导"),
-                        choices=[i18n("是"), i18n("否")],
-                        value=i18n("是"),
-                        interactive=True,
-                    )
-                    info__ = gr.Textbox(
-                        label=i18n("要置入的模型信息"), value="", max_lines=8, interactive=True
-                    )
-                    name_to_save0 = gr.Textbox(
-                        label=i18n("保存的模型名不带后缀"),
-                        value="",
-                        max_lines=1,
-                        interactive=True,
-                    )
-                    version_2 = gr.Radio(
-                        label=i18n("模型版本型号"),
-                        choices=["v1", "v2"],
-                        value="v1",
-                        interactive=True,
-                    )
-                with gr.Row():
-                    but6 = gr.Button(i18n("融合"), variant="primary")
-                    info4 = gr.Textbox(label=i18n("输出信息"), value="", max_lines=8)
-                but6.click(
-                    merge,
-                    [
-                        ckpt_a,
-                        ckpt_b,
-                        alpha_a,
-                        sr_,
-                        if_f0_,
-                        info__,
-                        name_to_save0,
-                        version_2,
-                    ],
-                    info4,
-                    api_name="ckpt_merge",
-                )  # def merge(path1,path2,alpha1,sr,f0,info):
-            with gr.Group():
-                gr.Markdown(value=i18n("修改模型信息(仅支持weights文件夹下提取的小模型文件)"))
-                with gr.Row():
-                    ckpt_path0 = gr.Textbox(
-                        label=i18n("模型路径"), value="", interactive=True
-                    )
-                    info_ = gr.Textbox(
-                        label=i18n("要改的模型信息"), value="", max_lines=8, interactive=True
-                    )
-                    name_to_save1 = gr.Textbox(
-                        label=i18n("保存的文件名, 默认空为和源文件同名"),
-                        value="",
-                        max_lines=8,
-                        interactive=True,
-                    )
-                with gr.Row():
-                    but7 = gr.Button(i18n("修改"), variant="primary")
-                    info5 = gr.Textbox(label=i18n("输出信息"), value="", max_lines=8)
-                but7.click(
-                    change_info,
-                    [ckpt_path0, info_, name_to_save1],
-                    info5,
-                    api_name="ckpt_modify",
-                )
-            with gr.Group():
-                gr.Markdown(value=i18n("查看模型信息(仅支持weights文件夹下提取的小模型文件)"))
-                with gr.Row():
-                    ckpt_path1 = gr.Textbox(
-                        label=i18n("模型路径"), value="", interactive=True
-                    )
-                    but8 = gr.Button(i18n("查看"), variant="primary")
-                    info6 = gr.Textbox(label=i18n("输出信息"), value="", max_lines=8)
-                but8.click(show_info, [ckpt_path1], info6, api_name="ckpt_show")
-            with gr.Group():
-                gr.Markdown(
-                    value=i18n(
-                        "模型提取(输入logs文件夹下大文件模型路径),适用于训一半不想训了模型没有自动提取保存小文件模型,或者想测试中间模型的情况"
-                    )
-                )
-                with gr.Row():
-                    ckpt_path2 = gr.Textbox(
-                        label=i18n("模型路径"),
-                        value="E:\\codes\\py39\\logs\\mi-test_f0_48k\\G_23333.pth",
-                        interactive=True,
-                    )
-                    save_name = gr.Textbox(
-                        label=i18n("保存名"), value="", interactive=True
-                    )
-                    sr__ = gr.Radio(
-                        label=i18n("目标采样率"),
-                        choices=["32k", "40k", "48k"],
-                        value="40k",
-                        interactive=True,
-                    )
-                    if_f0__ = gr.Radio(
-                        label=i18n("模型是否带音高指导,1是0否"),
-                        choices=["1", "0"],
-                        value="1",
-                        interactive=True,
-                    )
-                    version_1 = gr.Radio(
-                        label=i18n("模型版本型号"),
-                        choices=["v1", "v2"],
-                        value="v2",
-                        interactive=True,
-                    )
-                    info___ = gr.Textbox(
-                        label=i18n("要置入的模型信息"), value="", max_lines=8, interactive=True
-                    )
-                    but9 = gr.Button(i18n("提取"), variant="primary")
-                    info7 = gr.Textbox(label=i18n("输出信息"), value="", max_lines=8)
-                    ckpt_path2.change(
-                        change_info_, [ckpt_path2], [sr__, if_f0__, version_1]
-                    )
-                but9.click(
-                    extract_small_model,
-                    [ckpt_path2, save_name, sr__, if_f0__, info___, version_1],
-                    info7,
-                    api_name="ckpt_extract",
-                )
 
     if config.iscolab:
         app.queue(concurrency_count=511, max_size=1022).launch(share=True)
