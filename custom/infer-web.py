@@ -4,7 +4,6 @@ import sys
 now_dir = os.getcwd()
 sys.path.append(now_dir)
 from infer.modules.vc.modules import VC
-from infer.modules.uvr5.modules import uvr
 from infer.lib.train.process_ckpt import (
     change_info,
     extract_small_model,
@@ -39,7 +38,6 @@ logger = logging.getLogger(__name__)
 tmp = os.path.join(now_dir, "TEMP")
 shutil.rmtree(tmp, ignore_errors=True)
 shutil.rmtree("%s/runtime/Lib/site-packages/infer_pack" % (now_dir), ignore_errors=True)
-shutil.rmtree("%s/runtime/Lib/site-packages/uvr5_pack" % (now_dir), ignore_errors=True)
 os.makedirs(tmp, exist_ok=True)
 os.makedirs(os.path.join(now_dir, "logs"), exist_ok=True)
 os.makedirs(os.path.join(now_dir, "assets/weights"), exist_ok=True)
@@ -127,7 +125,6 @@ class ToolButton(gr.Button, gr.components.FormComponent):
 
 
 weight_root = os.getenv("weight_root")
-weight_uvr5_root = os.getenv("weight_uvr5_root")
 index_root = os.getenv("index_root")
 
 names = []
@@ -139,10 +136,6 @@ for root, dirs, files in os.walk(index_root, topdown=False):
     for name in files:
         if name.endswith(".index") and "trained" not in name:
             index_paths.append("%s/%s" % (root, name))
-uvr5_names = []
-for name in os.listdir(weight_uvr5_root):
-    if name.endswith(".pth") or "onnx" in name:
-        uvr5_names.append(name.replace(".pth", ""))
 
 
 def change_choices():
@@ -676,27 +669,7 @@ def train_index(exp_dir1, version19):
     yield "\n".join(infos)
 
 
-# but5.click(train1key, [exp_dir1, sr2, if_f0_3, trainset_dir4, spk_id5, gpus6, np7, f0method8, save_epoch10, total_epoch11, batch_size12, if_save_latest13, pretrained_G14, pretrained_D15, gpus16, if_cache_gpu17], info3)
-def train1key(
-    exp_dir1,
-    sr2,
-    if_f0_3,
-    trainset_dir4,
-    spk_id5,
-    np7,
-    f0method8,
-    save_epoch10,
-    total_epoch11,
-    batch_size12,
-    if_save_latest13,
-    pretrained_G14,
-    pretrained_D15,
-    gpus16,
-    if_cache_gpu17,
-    if_save_every_weights18,
-    version19,
-    gpus_rmvpe,
-):
+
     infos = []
 
     def get_info_str(strr):
@@ -769,7 +742,7 @@ def change_f0_method(f0method8):
     return {"visible": visible, "__type__": "update"}
 
 
-with gr.Blocks(title="Hina\'s Kaggle RVC") as app:
+with gr.Blocks(title="😭 Hina\'s Kaggle RVC Mod") as app:
     gr.Markdown("## 😭 Hina\'s Kaggle RVC Mod")
     gr.Markdown(
         value=i18n(
@@ -821,7 +794,6 @@ with gr.Blocks(title="Hina\'s Kaggle RVC") as app:
                 with gr.Row():
                     trainset_dir4 = gr.Textbox(
                         label=i18n("输入训练文件夹路径"), value="/kaggle/working/content/training/dataset_raw"
-                        # label=i18n("输入训练文件夹路径"), value="C:\\Users\\Mia\\Desktop\\RVC\\datasets"
                     )
                     spk_id5 = gr.Slider(
                         minimum=0,
@@ -911,7 +883,7 @@ with gr.Blocks(title="Hina\'s Kaggle RVC") as app:
                     )
                     batch_size12 = gr.Slider(
                         minimum=1,
-                        maximum=7,
+                        maximum=16,
                         step=1,
                         label=i18n("每张显卡的batch_size"),
                         value=default_batch_size,
@@ -970,7 +942,6 @@ with gr.Blocks(title="Hina\'s Kaggle RVC") as app:
                     )
                     but3 = gr.Button(i18n("训练模型"), variant="primary")
                     but4 = gr.Button(i18n("训练特征索引"), variant="primary")
-                    but5 = gr.Button(i18n("一键训练"), variant="primary")
                     info3 = gr.Textbox(label=i18n("输出信息"), value="", max_lines=10)
                     but3.click(
                         click_train,
@@ -994,31 +965,6 @@ with gr.Blocks(title="Hina\'s Kaggle RVC") as app:
                         api_name="train_start",
                     )
                     but4.click(train_index, [exp_dir1, version19], info3)
-                    but5.click(
-                        train1key,
-                        [
-                            exp_dir1,
-                            sr2,
-                            if_f0_3,
-                            trainset_dir4,
-                            spk_id5,
-                            np7,
-                            f0method8,
-                            save_epoch10,
-                            total_epoch11,
-                            batch_size12,
-                            if_save_latest13,
-                            pretrained_G14,
-                            pretrained_D15,
-                            gpus16,
-                            if_cache_gpu17,
-                            if_save_every_weights18,
-                            version19,
-                            gpus_rmvpe,
-                        ],
-                        info3,
-                        api_name="train_start_all",
-                    )
 
         with gr.TabItem(i18n("ckpt处理")):
             with gr.Group():
