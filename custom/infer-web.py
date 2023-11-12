@@ -763,7 +763,7 @@ def change_f0_method(f0method8):
 
 
 with gr.Blocks(title="Hina + Raven UI") as app:
-    gr.Markdown("## Hina + Raven UI")
+    gr.Markdown("<center>## Hina + Raven UI")
     gr.Markdown(
         value=i18n(
             "This is a proof of concept for making training easier for new users, while also removing unnecessary things that the end user would have downloaded themselves anyways, like UVR"
