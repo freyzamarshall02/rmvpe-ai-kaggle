@@ -1080,7 +1080,7 @@ with gr.Blocks(title="Hina + Raven UI") as app:
                 )
                 with gr.Row():
                     trainset_dir4 = gr.Textbox(
-                        label=i18n("folder name for your datasets"), value="datasets"
+                        label=i18n("folder name for your datasets"), value="/kaggle/input/"
                     )
                     spk_id5 = gr.Slider(
                         minimum=0,
