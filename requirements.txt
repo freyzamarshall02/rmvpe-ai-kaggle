@@ -7,7 +7,7 @@ librosa
 llvmlite
 fairseq
 faiss-cpu
-gradio
+gradio==3.14.0
 Cython
 pydub
 soundfile
